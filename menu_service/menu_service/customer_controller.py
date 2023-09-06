@@ -49,8 +49,16 @@ def winning_menu(request):
     # Query menus for the specified date and find the menu with the most votes
     try:
         today_menus = Menus.objects.filter(date=today_date)
-        max_menu = today_menus.annotate(employer_count=Count(
-            'employers')).order_by('-employer_count').first()
+        
+        max_menu = today_menus[0]
+        largest_size = len(max_menu.employers)
+
+        for menu in today_menus:
+            size = len(menu.employers)
+            if size > largest_size:
+                max_menu = menu
+                largest_size = size
+
 
         if max_menu:
             response_data = {'menu_id': max_menu.id}
